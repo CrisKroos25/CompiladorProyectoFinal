@@ -1,21 +1,10 @@
 section .data
     newline  db  0x0A          ; salto de linea
-    str_0  db  'Inicio del programa', 0
+    str_0  db  'Hola mundo', 0
     str_0_len  equ  $ - str_0 - 1
-    str_1  db  'Resultado de suma(3,4): ', 0
-    str_1_len  equ  $ - str_1 - 1
-    str_2  db  'x es mayor que 5', 0
-    str_2_len  equ  $ - str_2 - 1
-    str_3  db  'x es menor o igual a 5', 0
-    str_3_len  equ  $ - str_3 - 1
 
 section .bss
     digbuf:  resb 12
-    c:  resd 1
-    a:  resd 1
-    b:  resd 1
-    resultado:  resd 1
-    x:  resd 1
 
 section .text
 global _start
@@ -96,97 +85,14 @@ __println_int:
     ret
 
 
-suma:
-    push  ebp
-    mov   ebp, esp
-    mov   eax, [ebp+8]   ; param 'a'
-    mov  [a], eax
-    mov   eax, [ebp+12]   ; param 'b'
-    mov  [b], eax
-    mov  eax, [a]
-    push  eax
-    mov  eax, [b]
-    mov   ebx, eax
-    pop   eax
-    add   eax, ebx
-    mov  [c], eax
-    mov  eax, [c]
-    pop   ebp
-    ret
-
 _start:
 main:
-    ; println string 'Inicio del programa'
+    ; print string 'Hola mundo'
     mov  eax, 4         ; sys_write
     mov  ebx, 1         ; stdout
     mov  ecx, str_0
-    mov  edx, 19
+    mov  edx, 10
     int  0x80
-    ; newline
-    mov  eax, 4
-    mov  ebx, 1
-    mov  ecx, newline
-    mov  edx, 1
-    int  0x80
-    mov  eax, 4
-    push  eax
-    mov  eax, 3
-    push  eax
-    call  suma
-    add   esp, 8   ; limpiar 2 arg(s) del stack
-    mov  [resultado], eax
-    ; print string 'Resultado de suma(3,4): '
-    mov  eax, 4         ; sys_write
-    mov  ebx, 1         ; stdout
-    mov  ecx, str_1
-    mov  edx, 24
-    int  0x80
-    mov  eax, [resultado]
-    ; println entero (con newline)
-    call __println_int
-    mov  eax, 10
-    mov  [x], eax
-    mov  eax, [x]
-    push  eax
-    mov  eax, 5
-    mov   ebx, eax
-    pop   eax
-    cmp   eax, ebx
-    mov   eax, 0
-    jg   cmp_t_2866880701264
-    jmp   cmp_e_2866880701264
-cmp_t_2866880701264:
-    mov   eax, 1
-cmp_e_2866880701264:
-    cmp  eax, 0
-    je   else_2866880992592
-    ; println string 'x es mayor que 5'
-    mov  eax, 4         ; sys_write
-    mov  ebx, 1         ; stdout
-    mov  ecx, str_2
-    mov  edx, 16
-    int  0x80
-    ; newline
-    mov  eax, 4
-    mov  ebx, 1
-    mov  ecx, newline
-    mov  edx, 1
-    int  0x80
-    jmp  fin_if_2866880992592
-else_2866880992592:
-    ; println string 'x es menor o igual a 5'
-    mov  eax, 4         ; sys_write
-    mov  ebx, 1         ; stdout
-    mov  ecx, str_3
-    mov  edx, 22
-    int  0x80
-    ; newline
-    mov  eax, 4
-    mov  ebx, 1
-    mov  ecx, newline
-    mov  edx, 1
-    int  0x80
-fin_if_2866880992592:
     ; salida del proceso via syscall exit
     mov  eax, 1
     xor  ebx, ebx
