@@ -1,10 +1,13 @@
 section .data
     newline  db  0x0A          ; salto de linea
-    str_0  db  'Hola mundo', 0
-    str_0_len  equ  $ - str_0 - 1
 
 section .bss
     digbuf:  resb 12
+    a:  resd 1
+    b:  resd 1
+    x:  resd 1
+    y:  resd 1
+    resultado:  resd 1
 
 section .text
 global _start
@@ -85,14 +88,51 @@ __println_int:
     ret
 
 
+maximo:
+    push  ebp
+    mov   ebp, esp
+    mov   eax, [ebp+8]   ; param 'a'
+    mov  [a], eax
+    mov   eax, [ebp+12]   ; param 'b'
+    mov  [b], eax
+    mov  eax, [a]
+    push  eax
+    mov  eax, [b]
+    mov   ebx, eax
+    pop   eax
+    cmp   eax, ebx
+    mov   eax, 0
+    jg   cmp_t_1516359112400
+    jmp   cmp_e_1516359112400
+cmp_t_1516359112400:
+    mov   eax, 1
+cmp_e_1516359112400:
+    cmp  eax, 0
+    je   else_1516316138128
+    mov  eax, [a]
+    jmp  fin_if_1516316138128
+else_1516316138128:
+    mov  eax, [b]
+fin_if_1516316138128:
+    pop   ebp
+    ret
+
 _start:
 main:
-    ; print string 'Hola mundo'
-    mov  eax, 4         ; sys_write
-    mov  ebx, 1         ; stdout
-    mov  ecx, str_0
-    mov  edx, 10
-    int  0x80
+    mov  eax, 8
+    mov  [x], eax
+    mov  eax, 3
+    mov  [y], eax
+    mov  eax, [y]
+    push  eax
+    mov  eax, [x]
+    push  eax
+    call  maximo
+    add   esp, 8   ; limpiar 2 arg(s) del stack
+    mov  [resultado], eax
+    mov  eax, [resultado]
+    ; println entero (con newline)
+    call __println_int
     ; salida del proceso via syscall exit
     mov  eax, 1
     xor  ebx, ebx
